@@ -13,6 +13,7 @@ class AssignmentAdmin(admin.ModelAdmin):
         "deadline_hard",
     ]
 
+
 @admin.register(Submission)
 class SubmissionAdmin(admin.ModelAdmin):
     pass

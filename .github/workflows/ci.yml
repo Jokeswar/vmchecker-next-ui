@@ -1,18 +1,6 @@
 name: CI
 on: [push, pull_request]
 jobs:
-    SetUp:
-      runs-on: ubuntu-latest
-      steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-        -name: Provision
-        run: ./bin/provision-system.sh
-        shell: bash
-
     Lint:
       runs-on: ubuntu-latest
       steps:
@@ -21,26 +9,29 @@ jobs:
           with:
             fetch-depth: 0
 
-        -name: Run Black
-        run: black --check .
-        shell: bash
+        - name: Provision
+          run: ./bin/provision-system.sh
+          shell: bash
 
-        -name: Run ISort
-        run: isort --check --diff .
-        shell: bash
+        - name: Run Black
+          run: black --check .
+          shell: bash
 
-        -name: Run Pylint
-        run: pylint --recursive=y .
-        shell: bash
+        - name: Run ISort
+          run: isort --check --diff .
+          shell: bash
 
-        -name: Run MyPy
-        run: mypy .
-        shell: bash
+        - name: Run Pylint
+          run: pylint --recursive=y .
+          shell: bash
+
+        - name: Run MyPy
+          run: mypy .
+          shell: bash
 
 
 
     Test:
-        needs: Lint
         runs-on: ubuntu-latest
         steps:
           - name: Checkout Code
@@ -48,12 +39,18 @@ jobs:
             with:
               fetch-depth: 0
 
+          - name: Provision
+            run: ./bin/provision-system.sh
+            shell: bash
+
           - name: PyTest
             run: pytest
             shell: bash
 
     Publish:
-        needs: Test
+        needs:
+          - Test
+          - Lint
         runs-on: ubuntu-latest
         env:
           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
