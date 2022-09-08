@@ -11,6 +11,7 @@ django = "*"
 uwsgi = "*"
 psycopg2-binary = "*"
 django-prometheus = "*"
+requests = "*"
 
 [dev-packages]
 pylint = "*"
@@ -19,6 +20,7 @@ locust = "*"
 black = "*"
 pytest-django = "*"
 isort = "*"
+django-stubs = "*"
 
 [requires]
 python_version = "3.8"

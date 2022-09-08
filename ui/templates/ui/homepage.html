@@ -1,0 +1,14 @@
+{% extends "ui/generics/base.html" %}
+
+{% block body_content %}
+<div class="container">
+    <h1>VMChecker Next</h1>
+    <ul>
+        {% for assignment in assignments %}
+        <li>
+            <a href="{% url 'assignment_mainpage' assignment.pk %}"> {{ assignment.short_name }} </a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}
