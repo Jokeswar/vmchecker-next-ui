@@ -1,16 +1,16 @@
 import logging
 
 from django.conf import settings
-from django.shortcuts import redirect, render, get_object_or_404
-from django.core.paginator import Paginator
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login, logout, authenticate
-from django.http import HttpResponse, JsonResponse, HttpRequest
-from ui.core.api.vmck_api import VMCheckerAPI
+from django.core.paginator import Paginator
+from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
 
-from ui.models import Assignment, Submission
-from ui.forms.login_form import LoginForm
+from ui.core.api.vmck_api import VMCheckerAPI
 from ui.forms.gitlab_retrieve_form import GitlabRetriveForm
+from ui.forms.login_form import LoginForm
+from ui.models import Assignment, Submission
 
 LOG = logging.getLogger(__file__)
 
@@ -29,9 +29,7 @@ def login_page(request: HttpRequest) -> HttpResponse:
             username = form.data["username"]
             password = form.data["password"]
 
-            user = authenticate(username=username, password=password)
-
-            if not user:
+            if not (user := authenticate(username=username, password=password)):
                 LOG.info("Login failure for username: %s", username)
             else:
                 login(request, user)
