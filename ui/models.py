@@ -1,5 +1,8 @@
 from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
+
+from ui.core.api.vmck_api import VMCheckerAPI
 
 
 class Assignment(models.Model):
@@ -26,3 +29,11 @@ class Submission(models.Model):
     evaluator_job_id = models.CharField(max_length=36, blank=False, null=False)
 
     score = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+
+    @property
+    def get_state_display(self) -> str:
+        api = VMCheckerAPI(settings.VMCK_BACKEND_URL)
+        return api.status(self.evaluator_job_id).name
+
+    def __str__(self):
+        return f"Submission#{self.pk} by {self.user}"

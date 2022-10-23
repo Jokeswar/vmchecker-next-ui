@@ -119,3 +119,5 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "/login"
 
 VMCK_BACKEND_URL = os.environ.get("VMCK_BACKEND_URL", "http://localhost:8000/api/v1/")
+
+PAGINATION_SIZE = 25

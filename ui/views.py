@@ -59,7 +59,7 @@ def assignment_mainpage(request: HttpRequest, pk: int) -> HttpResponse:
     assignment = get_object_or_404(Assignment, pk=pk)
     submissions = Submission.objects.all().order_by("-id").select_related("assignment")
 
-    paginator = Paginator(submissions, 25)
+    paginator = Paginator(submissions, settings.PAGINATION_SIZE)
     page = request.GET.get("page", "1")
     page_submissions = paginator.get_page(page)
 
@@ -82,7 +82,28 @@ def assignment_mainpage(request: HttpRequest, pk: int) -> HttpResponse:
     return render(
         request,
         "ui/assignment.html",
-        {"assignment": assignment, "submissions": page_submissions, "retrieve_form": retrieve_from},
+        {
+            "assignment": assignment,
+            "submissions": page_submissions,
+            "retrieve_form": retrieve_from,
+        },
+    )
+
+
+@login_required
+def submission_result(request: HttpRequest, pk: int) -> HttpResponse:
+    sub = get_object_or_404(Submission, pk=pk)
+
+    return render(
+        request,
+        "ui/submission_result.html",
+        {
+            "sub": sub,
+            "submission_assignment": {
+                "text": sub.assignment.short_name,
+                "pk": sub.assignment.pk,
+            },
+        },
     )
 
 

@@ -1,5 +1,6 @@
 [scripts]
 deploy-compose = "docker compose -f etc/compose.yml"
+dev = "./manage.py runserver 0.0.0.0:7000"
 
 [[source]]
 url = "https://pypi.org/simple"

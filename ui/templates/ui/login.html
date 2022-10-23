@@ -7,11 +7,14 @@
         <div class="col">
             <h1>VMChecker Next</h1>
 
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <input class="btn btn-primary" type="submit" value="Login">
-            </form>
+            <main class="w-100 m-auto" style="max-width: 330px;">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input class="w-100 btn btn-lg btn-primary" type="submit" value="Login">
+                </form>
+            </main>
+
         </div>
     </div>
 </div>

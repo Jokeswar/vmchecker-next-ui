@@ -14,11 +14,17 @@
     <script src="https://unpkg.com/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://unpkg.com/bootstrap@5.2.0/dist/js/bootstrap.min.js"></script>
 
+    {% block head_content %} {% endblock %}
+
     <title>VMChecker Next</title>
 </head>
 
 <body>
+    <div class="container">
+        {% include "ui/generics/navbar.html" %}
+    </div>
     {% block body_content %} {% endblock %}
+    {% block javascript %} {% endblock %}
 </body>
 
 </html>

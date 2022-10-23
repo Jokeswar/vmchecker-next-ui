@@ -1,6 +1,23 @@
 from urllib.parse import urljoin
+from typing import Union
+from enum import Enum
 
 import requests
+
+
+class VMCheckerJobStatus(Enum):
+    NEW = "0"
+    WAITING_FOR_RESULTS = "1"
+    DONE = "2"
+    ERROR = "3"
+
+    @staticmethod
+    def from_name(name: str) -> Union[any, None]:
+        for enum in VMCheckerJobStatus:
+            if enum.name.lower() == name.lower().strip():
+                return enum
+
+        return None
 
 
 class VMCheckerAPI:
@@ -28,3 +45,14 @@ class VMCheckerAPI:
         )
 
         return response.json()["diff"]
+
+    def status(self, job_id: str) -> VMCheckerJobStatus:
+        response = requests.get(
+            urljoin(self._backend_url, f"{job_id}/status"),
+            timeout=5,
+        )
+
+        return VMCheckerJobStatus.from_name(response.json()["status"])
+
+    def trace(self, job_id: str) -> str:
+        pass
