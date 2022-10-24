@@ -22,7 +22,7 @@ jobs:
           shell: bash
 
         - name: Run Pylint
-          run: pylint --recursive=y .
+          run: DJANGO_SETTINGS_MODULE=ui.settings pylint --recursive=y .
           shell: bash
 
         - name: Run MyPy
@@ -76,4 +76,4 @@ jobs:
             uses: docker/build-push-action@v2
             with:
               push: true
-              tags: jokeswar/vmchecker_api:${{ env.BRANCH_NAME }}
+              tags: jokeswar/vmchecker_ui:${{ env.BRANCH_NAME }}

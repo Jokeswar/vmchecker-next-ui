@@ -1,5 +1,6 @@
-from django.contrib.auth.models import User
+# pylint: disable=imported-auth-user
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.db import models
 
 from ui.core.api.vmck_api import VMCheckerAPI
@@ -33,7 +34,8 @@ class Submission(models.Model):
     @property
     def get_state_display(self) -> str:
         api = VMCheckerAPI(settings.VMCK_BACKEND_URL)
-        return api.status(self.evaluator_job_id).name
+        status = api.status(self.evaluator_job_id)
+        return str(status.name)
 
     def __str__(self):
         return f"Submission#{self.pk} by {self.user}"

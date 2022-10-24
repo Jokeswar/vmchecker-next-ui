@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import base64
-from urllib.parse import urljoin
-from typing import Union
 from enum import Enum
+from typing import Optional
+from urllib.parse import urljoin
 
 import requests
 
@@ -13,7 +15,7 @@ class VMCheckerJobStatus(Enum):
     ERROR = "3"
 
     @staticmethod
-    def from_name(name: str) -> Union[any, None]:
+    def from_name(name: str) -> Optional[VMCheckerJobStatus]:
         for enum in VMCheckerJobStatus:
             if enum.name.lower() == name.lower().strip():
                 return enum
@@ -36,7 +38,7 @@ class VMCheckerAPI:
             },
             timeout=5,
         )
-        return response.json()["UUID"]
+        return str(response.json()["UUID"])
 
     def retrive_archive(self, gitlab_private_token: str, gitlab_project_id: int) -> str:
         response = requests.post(
@@ -45,7 +47,7 @@ class VMCheckerAPI:
             timeout=5,
         )
 
-        return response.json()["diff"]
+        return str(response.json()["diff"])
 
     def status(self, job_id: str) -> VMCheckerJobStatus:
         response = requests.get(
@@ -53,7 +55,10 @@ class VMCheckerAPI:
             timeout=5,
         )
 
-        return VMCheckerJobStatus.from_name(response.json()["status"])
+        if (status := VMCheckerJobStatus.from_name(response.json()["status"])) is not None:
+            return status
+
+        raise RuntimeError(f"Unknown status {response.json()['status']} for {job_id}")
 
     def trace(self, job_id: str) -> str:
         response = requests.get(

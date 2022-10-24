@@ -1,4 +1,5 @@
 import logging
+import re
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
@@ -94,7 +95,6 @@ def assignment_mainpage(request: HttpRequest, pk: int) -> HttpResponse:
 def submission_result(request: HttpRequest, pk: int) -> HttpResponse:
     sub = get_object_or_404(Submission, pk=pk)
     api = VMCheckerAPI(settings.VMCK_BACKEND_URL)
-    import re
 
     trace = api.trace(sub.evaluator_job_id)
     trace = trace[trace.find("VMCHECKER_TRACE_CLEANUP") + len("VMCHECKER_TRACE_CLEANUP") + 1 :]
