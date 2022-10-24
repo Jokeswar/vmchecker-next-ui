@@ -1,3 +1,4 @@
+import base64
 from urllib.parse import urljoin
 from typing import Union
 from enum import Enum
@@ -55,4 +56,11 @@ class VMCheckerAPI:
         return VMCheckerJobStatus.from_name(response.json()["status"])
 
     def trace(self, job_id: str) -> str:
-        pass
+        response = requests.get(
+            urljoin(self._backend_url, f"{job_id}/trace"),
+            timeout=5,
+        )
+
+        decoded_bytes = base64.b64decode(response.json()["trace"])
+
+        return str(decoded_bytes, encoding="utf-8")

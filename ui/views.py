@@ -93,12 +93,20 @@ def assignment_mainpage(request: HttpRequest, pk: int) -> HttpResponse:
 @login_required
 def submission_result(request: HttpRequest, pk: int) -> HttpResponse:
     sub = get_object_or_404(Submission, pk=pk)
+    api = VMCheckerAPI(settings.VMCK_BACKEND_URL)
+    import re
+
+    trace = api.trace(sub.evaluator_job_id)
+    trace = trace[trace.find("VMCHECKER_TRACE_CLEANUP") + len("VMCHECKER_TRACE_CLEANUP") + 1 :]
+    score_line = re.findall(r".*Total:\s*\d+\/\d+(?:.\d+)?", trace)[0]
+    trace = trace[: trace.find(score_line) + len(score_line)]
 
     return render(
         request,
         "ui/submission_result.html",
         {
             "sub": sub,
+            "sub_trace": trace,
             "submission_assignment": {
                 "text": sub.assignment.short_name,
                 "pk": sub.assignment.pk,
