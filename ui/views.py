@@ -1,11 +1,12 @@
 import logging
 import re
 
+from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 
 from ui.core.api.vmck_api import VMCheckerAPI
@@ -65,6 +66,9 @@ def assignment_mainpage(request: HttpRequest, pk: int) -> HttpResponse:
     page_submissions = paginator.get_page(page)
 
     if request.method == "POST":
+        if assignment.deadline_hard and timezone.now() > assignment.deadline_hard:
+            return HttpResponseForbidden("You tried to submit after the hard deadline!")
+
         retrieve_from = GitlabRetriveForm(request.POST)
         if retrieve_from.is_valid():
             gitlab_project_id = int(retrieve_from.data["gitlab_project_id"])
@@ -94,6 +98,10 @@ def assignment_mainpage(request: HttpRequest, pk: int) -> HttpResponse:
 @login_required
 def submission_result(request: HttpRequest, pk: int) -> HttpResponse:
     sub = get_object_or_404(Submission, pk=pk)
+
+    if sub.user.pk != request.user.pk:
+        return HttpResponseForbidden()
+
     api = VMCheckerAPI(settings.VMCK_BACKEND_URL)
 
     trace = api.trace(sub.evaluator_job_id)

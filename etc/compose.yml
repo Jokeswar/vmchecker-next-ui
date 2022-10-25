@@ -1,0 +1,39 @@
+version: "3.9"
+services:
+  ui:
+    image: jokeswar/vmchecker_ui:master
+    restart: always
+    depends_on:
+      - database
+    environment:
+      VMCK_BACKEND_URL: "${VMCK_BACKEND_URL}"
+      DATABASE_ENGINE: "${DATABASE_ENGINE}"
+      DATABASE_NAME: "${DATABASE_NAME}"
+      DATABASE_USER: "${DATABASE_USER}"
+      DATABASE_PASSWORD: "${DATABASE_PASSWORD}"
+      DATABASE_HOST: "database"
+      DATABASE_PORT: "5432"
+      SECRET_KEY: "${SECRET_KEY}"
+    ports:
+      - "7000:7000"
+    networks:
+      - database-network
+
+  database:
+    image: postgres:12.0-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: "${DATABASE_NAME}"
+      POSTGRES_USER: "${DATABASE_USER}"
+      POSTGRES_PASSWORD: "${DATABASE_PASSWORD}"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - database-network
+
+volumes:
+  db-data:
+
+
+networks:
+  database-network:

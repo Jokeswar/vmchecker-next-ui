@@ -1,10 +1,11 @@
 FROM python:3.8.10-buster
 
-WORKDIR /opt/api
+WORKDIR /opt/ui
 
-ADD api ./api
+ADD ui ./ui
 ADD bin ./bin
 COPY Pipfile.lock ./
+COPY Pipfile ./
 COPY manage.py ./
 
 RUN set -e \
@@ -12,5 +13,6 @@ RUN set -e \
 
 RUN ./manage.py collectstatic --no-input
 
-EXPOSE 8000
-CMD ./bin/startapi.sh
+EXPOSE 7000
+
+CMD ./bin/start-ui.sh
