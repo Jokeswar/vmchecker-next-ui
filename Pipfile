@@ -1,5 +1,6 @@
 [scripts]
 docker-compose = "docker compose -f etc/compose.yml"
+docker-compose-fill-data = "docker compose -f etc/compose.yml exec ui ./manage.py populate_db"
 docker-compose-dev = "docker compose -f etc/compose.yml --env-file ./etc/.env.development"
 docker-compose-prod = "docker compose -f etc/compose.yml --env-file ./etc/.env.production"
 dev = "./manage.py runserver 0.0.0.0:7000"
