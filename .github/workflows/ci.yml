@@ -10,7 +10,7 @@ jobs:
             fetch-depth: 0
 
         - name: Provision
-          run: ./bin/provision-system.sh
+          run: sudo ./bin/provision-system.sh
           shell: bash
 
         - name: Run Black
@@ -40,7 +40,7 @@ jobs:
               fetch-depth: 0
 
           - name: Provision
-            run: ./bin/provision-system.sh
+            run: sudo ./bin/provision-system.sh
             shell: bash
 
           - name: PyTest
