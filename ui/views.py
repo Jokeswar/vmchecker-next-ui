@@ -1,5 +1,5 @@
 import logging
-import re
+import base64
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
@@ -11,6 +11,7 @@ from django.utils import timezone
 
 from ui.core.api.vmck_api import VMCheckerAPI
 from ui.forms.gitlab_retrieve_form import GitlabRetriveForm
+from ui.forms.upload_form import UploadFileForm
 from ui.forms.login_form import LoginForm
 from ui.models import Assignment, Submission
 
@@ -69,20 +70,31 @@ def assignment_mainpage(request: HttpRequest, pk: int) -> HttpResponse:
         if assignment.deadline_hard and timezone.now() > assignment.deadline_hard:
             return HttpResponseForbidden("You tried to submit after the hard deadline!")
 
-        retrieve_from = GitlabRetriveForm(request.POST)
-        if retrieve_from.is_valid():
-            gitlab_project_id = int(retrieve_from.data["gitlab_project_id"])
-            gitlab_private_token = retrieve_from.data["gitlab_private_token"]
+        if "submitFromGitlab" in request.POST:
+            retrieve_form = GitlabRetriveForm(request.POST)
+            if retrieve_form.is_valid():
+                gitlab_project_id = int(retrieve_form.data["gitlab_project_id"])
+                gitlab_private_token = retrieve_form.data["gitlab_private_token"]
+                gitlab_branch = retrieve_form.data["gitlab_branch"]
 
-            api = VMCheckerAPI(settings.VMCK_BACKEND_URL)
-            archive = api.retrive_archive(gitlab_private_token, gitlab_project_id)
-            uuid = api.submit(
-                assignment.gitlab_private_token, assignment.gitlab_project_id, request.user.username, archive
-            )
-            Submission.objects.create(user=request.user, assignment=assignment, evaluator_job_id=uuid)
+                api = VMCheckerAPI(settings.VMCK_BACKEND_URL)
+                archive = api.retrive_archive(gitlab_private_token, gitlab_project_id, gitlab_branch)
+                uuid = api.submit(
+                    assignment.gitlab_private_token, assignment.gitlab_project_id, assignment.gitlab_branch, request.user.username, archive
+                )
+                Submission.objects.create(user=request.user, assignment=assignment, evaluator_job_id=uuid)
+        elif "submitYourArchive" in request.POST:
+            upload_form = UploadFileForm(request.POST, request.FILES)
+            if upload_form.is_valid():
+                file = request.FILES["file"]
+                api = VMCheckerAPI(settings.VMCK_BACKEND_URL)
+                uuid = api.submit(
+                    assignment.gitlab_private_token, assignment.gitlab_project_id, assignment.gitlab_branch, request.user.username, str(base64.encodebytes(file.read()), encoding="ascii")
+                )
+                Submission.objects.create(user=request.user, assignment=assignment, evaluator_job_id=uuid)
 
-    else:
-        retrieve_from = GitlabRetriveForm()
+    retrieve_form = GitlabRetriveForm()
+    upload_form = UploadFileForm()
 
     return render(
         request,
@@ -90,7 +102,8 @@ def assignment_mainpage(request: HttpRequest, pk: int) -> HttpResponse:
         {
             "assignment": assignment,
             "submissions": page_submissions,
-            "retrieve_form": retrieve_from,
+            "retrieve_form": retrieve_form,
+            "upload_form": upload_form,
         },
     )
 
@@ -105,9 +118,13 @@ def submission_result(request: HttpRequest, pk: int) -> HttpResponse:
     api = VMCheckerAPI(settings.VMCK_BACKEND_URL)
 
     trace = api.trace(sub.evaluator_job_id)
-    trace = trace[trace.find("VMCHECKER_TRACE_CLEANUP") + len("VMCHECKER_TRACE_CLEANUP") + 1 :]
-    score_line = re.findall(r".*Total:\s*\d+\/\d+(?:.\d+)?", trace)[0]
-    trace = trace[: trace.find(score_line) + len(score_line)]
+    trace_start_marker = trace.find("<VMCK_NEXT_BEGIN>")
+    trace_start_position = trace_start_marker + len("<VMCK_NEXT_BEGIN>") + 1 if trace_start_marker > 0 else 0
+    trace = trace[trace_start_position:]
+
+    trace_end_marker = trace.find("<VMCK_NEXT_END>")
+    trace_end_position = trace_end_marker if trace_start_marker > 0 else -1
+    trace = trace[:trace_end_position]
 
     return render(
         request,

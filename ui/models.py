@@ -1,4 +1,5 @@
 # pylint: disable=imported-auth-user
+import re
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
@@ -8,6 +9,7 @@ from ui.core.api.vmck_api import VMCheckerAPI
 
 class Assignment(models.Model):
     gitlab_private_token = models.CharField(max_length=40, blank=False, null=False)
+    gitlab_branch = models.CharField(max_length=256, default="master", blank=False, null=False)
     gitlab_project_id = models.BigIntegerField(blank=False, null=False)
     long_name = models.CharField(max_length=256, blank=False, null=False)
     short_name = models.CharField(max_length=64, blank=False, null=False)
@@ -36,6 +38,13 @@ class Submission(models.Model):
         api = VMCheckerAPI(settings.VMCK_BACKEND_URL)
         status = api.status(self.evaluator_job_id)
         return str(status.name)
+
+    @property
+    def get_score(self) -> float:
+        api = VMCheckerAPI(settings.VMCK_BACKEND_URL)
+        trace = api.trace(self.evaluator_job_id)
+        score = re.findall(r".*Total:\s*(\d+)\/\d+", trace)
+        return score[0] if len(score) > 0 else 0
 
     def __str__(self):
         return f"Submission#{self.pk} by {self.user}"

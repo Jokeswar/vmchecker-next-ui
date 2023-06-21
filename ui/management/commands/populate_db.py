@@ -6,9 +6,13 @@ from ui.models import Assignment
 
 
 class Command(BaseCommand):
-    help = "Displays current time"
+    help = "Populate the DB with some initial data (an admin user and an assignment)"
 
     def handle(self, *args, **kwargs) -> None:
+        user_count = User.objects.all().count()
+        if user_count != 0:
+            return
+
         User.objects.create_user(
             username="admin", email="admin@admin.com", password="admin", is_staff=True, is_superuser=True
         )
@@ -17,6 +21,6 @@ class Command(BaseCommand):
             gitlab_private_token="REPLACE_WITH_OWN_TOKEN",
             gitlab_project_id=-1,
             long_name="Long Name of Assignment",
-            short_name="ShortName",
+            short_name="Short Name of Assignment",
             max_score=100,
         )

@@ -8,31 +8,62 @@
         <p>{{ assignment.description }}</p>
     </div>
 
-    <form method="post">
-        <div class="form-group">
-            {% csrf_token %}
-            {{ retrieve_form.as_p }}
+    <hr class="hr" />
+
+    <p>
+        <a class="btn btn-primary" data-bs-toggle="collapse" href="#submtiFromGitlab" role="button"
+            aria-expanded="false" aria-controls="submtiFromGitlab">Submit from Gitlab</a>
+        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#submitYourArchive"
+            aria-expanded="false" aria-controls="submitYourArchive">Submit your Archive</button>
+    </p>
+    <div class="row">
+        <div class="col">
+            <div class="collapse multi-collapse" id="submtiFromGitlab">
+                <div class="card card-body">
+                    <form method="post">
+                        <div class="form-group">
+                            {% csrf_token %}
+                            {{ retrieve_form.as_p }}
+                        </div>
+                        <input class="btn btn-primary" type="submit" name="submitFromGitlab" value="Submit">
+                    </form>
+                </div>
+            </div>
         </div>
-        <input class="btn btn-primary" type="submit" value="Submit">
-    </form>
+        <div class="col">
+            <div class="collapse multi-collapse" id="submitYourArchive">
+                <div class="card card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            {% csrf_token %}
+                            {{ upload_form.as_p }}
+                        </div>
+                        <input class="btn btn-primary" type="submit" name="submitYourArchive" value="Submit">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="hr" />
 
     <div class="row">
         <table class="table table-striped table-bordered table-sm mt-2">
             <thead>
                 <tr>
-                    <th scope="col">Submission ID</th>
-                    <th scope="col">Score</th>
-                    <th scope="col">Status</th>
+                    <th scope="col" class="text-center">Submission ID</th>
+                    <th scope="col" class="text-center">Score</th>
+                    <th scope="col" class="text-center">Status</th>
                 </tr>
             </thead>
             <tbody>
                 {% for sub in submissions %}
                 <tr>
                     <td>{{ sub.pk }}</td>
-                    <td>{% if sub.score is None %}0{% else %}{{ sub.score }}{% endif %}/{{ sub.assignment.max_score }}
-                    </td>
-                    <td>{{ sub.get_state_display }}</td>
-                    <td><a class="btn btn-primary btn-sm" href="{% url 'submission_result' sub.pk %}">Results</a></td>
+                    <td class="text-center">{{ sub.get_score }}/{{ sub.assignment.max_score }}</td>
+                    <td class="text-center">{{ sub.get_state_display }}</td>
+                    <td class="text-end"><a class="btn btn-primary btn-sm"
+                            href="{% url 'submission_result' sub.pk %}">Results</a></td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -44,7 +75,7 @@
             {% endif %}
 
             <span class="current">
-                Page {{ submissions.number }} of {{ submissions.paginator.num_pages }}.
+                Page {{ submissions.number }} of {{ submissions.paginator.num_pages }}
             </span>
 
             {% if submissions.has_next %}

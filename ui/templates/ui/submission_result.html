@@ -5,29 +5,14 @@
 
     <h1>{{ sub }} ({{ sub.get_state_display }})</h1>
 
-    {% if sub.state == sub.STATE_DONE %}
+    <p>Final score: {{ sub.get_score }}/{{ sub.assignment.max_score }}</p>
 
-    <p>Final score:
-        {% if sub.score is None %}
-        0
-        {% else %}
-        {{ sub.score }}
-        {%endif%}
-        /{{ sub.assignment.max_score }}</p>
-
-    {% if sub.user.username == user.username or user in sub.assignment.course.teaching_assistants.all %}
     <h2>Output</h2>
     <div class="card">
         <div class="card-body">
             <pre><code>{{ sub_trace }}</code></pre>
         </div>
     </div>
-    {% endif %}
-    {% else %}
-
-    <p>Submission is being evaluated, check again later.</p>
-
-    {% endif %}
 
 </div>
 

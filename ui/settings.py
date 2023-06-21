@@ -121,3 +121,5 @@ LOGIN_URL = "/login"
 VMCK_BACKEND_URL = os.environ.get("VMCK_BACKEND_URL", "http://localhost:8000/api/v1/")
 
 PAGINATION_SIZE = 25
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10485760
