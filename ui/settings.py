@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "very-secret-key")
 
-DEBUG = string_to_bool(os.environ.get("DJANGO_DEBUG", "true"))
+DEBUG = string_to_bool(os.environ.get("DJANGO_DEBUG", "false"))
 
 ALLOWED_HOSTS = ["*"]
 

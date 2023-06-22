@@ -19,6 +19,12 @@ pip3 install pipenv
 pipenv run docker compose -f etc/compose-full.yml -p ui up
 ```
 
+By default a user admin (password: admin) will be created along with a dummy assignment.
+You can visit the website by going to `http://localhost:7000/`.
+
+To change the assignment go to `http://localhost:7000/admin/` and log in as the admin.
+Next by cliking the assignments tab and then choosing one of the results you can edit that entry.
+
 ## Run a development stack
 
 Run:
