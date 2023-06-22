@@ -45,7 +45,7 @@ class Submission(models.Model):
         api = VMCheckerAPI(settings.VMCK_BACKEND_URL)
         trace = api.trace(self.evaluator_job_id)
         score = re.findall(r".*Total:\s*(\d+)\/\d+", trace)
-        return score[0] if len(score) > 0 else 0
+        return float(score[0]) if len(score) > 0 else 0
 
     def __str__(self):
         return f"Submission#{self.pk} by {self.user}"

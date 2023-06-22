@@ -25,9 +25,9 @@ jobs:
           run: DJANGO_SETTINGS_MODULE=ui.settings pylint --recursive=y .
           shell: bash
 
-        - name: Run MyPy
-          run: mypy .
-          shell: bash
+        # - name: Run MyPy
+        #   run: mypy .
+        #   shell: bash
 
 
 

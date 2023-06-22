@@ -1,5 +1,24 @@
 # VMChecker Next UI
 
+## Requirements
+
+```
+apt-get update -yqq
+apt-get install -yqq python3-pip
+
+pip3 install pipenv
+```
+
+## Run a deployment stack (backend included)
+
+1. Copy `etc/.env.compose-full` to the root folder as `.env`
+2. Replace the variables inside with the correct values
+3. Deploy using docker compose and the `etc/compose-full.yml` configuration
+
+```
+pipenv run docker compose -f etc/compose-full.yml -p ui up
+```
+
 ## Run a development stack
 
 Run:
