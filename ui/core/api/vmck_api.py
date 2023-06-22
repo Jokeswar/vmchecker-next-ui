@@ -43,6 +43,7 @@ class VMCheckerAPI:
                 "gitlab_project_id": gitlab_project_id,
                 "username": username,
                 "archive": archive,
+                "gitlab_branch": gitlab_branch,
             },
             timeout=10,
         )
@@ -82,8 +83,7 @@ class VMCheckerAPI:
             return VMCheckerJobStatus.UNKNOWN
 
         status_raw_value = json_response["status"]
-        status = VMCheckerJobStatus.from_name(status_raw_value)
-        if status is None:
+        if (status := VMCheckerJobStatus.from_name(status_raw_value)) is None:
             log.error("Unknow status value: %s", status_raw_value)
             return VMCheckerJobStatus.UNKNOWN
 

@@ -9,8 +9,7 @@ class Command(BaseCommand):
     help = "Populate the DB with some initial data (an admin user and an assignment)"
 
     def handle(self, *args, **kwargs) -> None:
-        user_count = User.objects.all().count()
-        if user_count != 0:
+        if User.objects.all().count() != 0:
             print("The DB is already populated")
             return
 
