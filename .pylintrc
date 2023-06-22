@@ -99,6 +99,7 @@ disable=
     fixme,
     cyclic-import,
     R6003,
+    W0703
 
 
 [REPORTS]
@@ -496,7 +497,7 @@ preferred-modules=
 
 # Exceptions that will emit a warning when being caught. Defaults to
 # "Exception"
-; overgeneral-exceptions=Exception
+overgeneral-exceptions=Exception
 
 
 [TYPING]
