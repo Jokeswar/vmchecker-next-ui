@@ -8,15 +8,15 @@ from urllib.parse import urljoin
 
 import requests
 
-
 log = logging.getLogger(__name__)
+
 
 class VMCheckerJobStatus(Enum):
     NEW = "0"
     WAITING_FOR_RESULTS = "1"
     DONE = "2"
     ERROR = "3"
-    UNKNOWN = "4"   # This means that the client could not retrieve the value from the server or the response was invalid
+    UNKNOWN = "4"  # This means that the client could not retrieve the value from the server or the response was invalid
 
     @staticmethod
     def from_name(name: str) -> Optional[VMCheckerJobStatus]:
@@ -33,7 +33,9 @@ class VMCheckerAPI:
     def __init__(self, backend_url: str) -> None:
         self._backend_url = backend_url
 
-    def submit(self, gitlab_private_token: str, gitlab_project_id: int, gitlab_branch: str, username: str, archive: str) -> str:
+    def submit(
+        self, gitlab_private_token: str, gitlab_project_id: int, gitlab_branch: str, username: str, archive: str
+    ) -> str:
         response = requests.post(
             urljoin(self._backend_url, "submit"),
             data={
@@ -49,14 +51,18 @@ class VMCheckerAPI:
     def retrive_archive(self, gitlab_private_token: str, gitlab_project_id: int, gitlab_branch: str) -> str:
         response = requests.post(
             urljoin(self._backend_url, "archive"),
-            data={"gitlab_private_token": gitlab_private_token, "gitlab_project_id": gitlab_project_id, "gitlab_branch": gitlab_branch},
+            data={
+                "gitlab_private_token": gitlab_private_token,
+                "gitlab_project_id": gitlab_project_id,
+                "gitlab_branch": gitlab_branch,
+            },
             timeout=10,
         )
 
         return str(response.json()["diff"])
 
     def status(self, job_id: str) -> VMCheckerJobStatus:
-        try :
+        try:
             response = requests.get(
                 urljoin(self._backend_url, f"{job_id}/status"),
                 timeout=10,
@@ -102,7 +108,6 @@ class VMCheckerAPI:
         if "trace" not in json_response:
             log.error("The json response of trace is missing the 'trace' key: %s", json_response)
             return VMCheckerAPI.TRACE_RETRIEVE_FAILURE
-
 
         trace_raw_value = json_response["trace"]
         decoded_bytes = base64.b64decode(trace_raw_value)

@@ -1,0 +1,99 @@
+version: "3.9"
+services:
+  ui:
+    image: jokeswar/vmchecker_ui:master
+    restart: always
+    depends_on:
+      - database-ui
+      - backend
+    environment:
+      VMCK_BACKEND_URL: "http://backend:8000/api/v1/"
+      DATABASE_ENGINE: "django.db.backends.postgresql"
+      DATABASE_NAME: "ui"
+      DATABASE_USER: "${DATABASE_USER_UI}"
+      DATABASE_PASSWORD: "${DATABASE_PASSWORD_UI}"
+      DATABASE_HOST: "database-ui"
+      DATABASE_PORT: "5432"
+      SECRET_KEY: "${SECRET_KEY_UI}"
+    ports:
+      - "7000:7000"
+    networks:
+      - database-ui-network
+      - backend-network
+
+  database-ui:
+    image: postgres:12.0-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: "ui"
+      POSTGRES_USER: "${DATABASE_USER_UI}"
+      POSTGRES_PASSWORD: "${DATABASE_PASSWORD_UI}"
+    volumes:
+      - db-data-ui:/var/lib/postgresql/data
+    networks:
+      - database-ui-network
+
+  backend:
+    image: jokeswar/vmchecker_api:master
+    restart: always
+    depends_on:
+      - database-backend
+      - storage-backend
+    environment:
+      GITLAB_URL: "${GITLAB_URL}"
+      SUBMISSION_STORAGE_TYPE: "MINIO"
+      MINIO_ADDRESS: "storage:9000"
+      MINIO_ACCESS_KEY: "${MINIO_ACCESS_KEY}"
+      MINIO_SECRET_KEY: "${MINIO_SECRET_KEY}"
+      DATABASE_NAME: "backend"
+      DATABASE_USER: "${DATABASE_USER_BACKEND}"
+      DATABASE_PASSWORD: "${DATABASE_PASSWORD_BACKEND}"
+      DATABASE_HOST: "database-backend"
+      DATABASE_PORT: "5432"
+      SECRET_KEY: "${SECRET_KEY_BACKEND}"
+      UWSGI_PROCESS_COUNT: "2"
+    ports:
+      - "8000:8000"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+    networks:
+      - database-backend-network
+      - storage-backend-network
+      - backend-network
+
+  database-backend:
+    image: postgres:12.0-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: "backend"
+      POSTGRES_USER: "${DATABASE_USER_BACKEND}"
+      POSTGRES_PASSWORD: "${DATABASE_PASSWORD_BACKEND}"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - database-backend-network
+
+  storage-backend:
+    image: minio/minio:RELEASE.2022-10-24T18-35-07Z
+    restart: always
+    command: [ "server", "/data" ]
+    environment:
+      MINIO_ACCESS_KEY: "${MINIO_ACCESS_KEY}"
+      MINIO_SECRET_KEY: "${MINIO_SECRET_KEY}"
+    volumes:
+      - storage-data:/data
+    networks:
+      - storage-backend-network
+
+volumes:
+  db-data-ui:
+  storage-data:
+  db-data:
+
+networks:
+  database-ui-network:
+  database-backend-network:
+  storage-backend-network:
+  backend-network:

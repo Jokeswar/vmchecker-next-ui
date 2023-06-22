@@ -11,6 +11,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs) -> None:
         user_count = User.objects.all().count()
         if user_count != 0:
+            print("The DB is already populated")
             return
 
         User.objects.create_user(

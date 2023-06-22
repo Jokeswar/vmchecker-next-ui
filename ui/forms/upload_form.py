@@ -13,9 +13,6 @@ class UploadFileForm(forms.Form):
         data = self.cleaned_data["file"]
 
         if data.size >= settings.DATA_UPLOAD_MAX_MEMORY_SIZE:
-            raise forms.ValidationError(
-                "Keep files below "
-                f"{filesizeformat(settings.DATA_UPLOAD_MAX_MEMORY_SIZE)}"
-            )
+            raise forms.ValidationError("Keep files below " f"{filesizeformat(settings.DATA_UPLOAD_MAX_MEMORY_SIZE)}")
 
         return data

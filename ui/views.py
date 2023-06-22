@@ -1,5 +1,5 @@
-import logging
 import base64
+import logging
 
 from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
@@ -11,8 +11,8 @@ from django.utils import timezone
 
 from ui.core.api.vmck_api import VMCheckerAPI
 from ui.forms.gitlab_retrieve_form import GitlabRetriveForm
-from ui.forms.upload_form import UploadFileForm
 from ui.forms.login_form import LoginForm
+from ui.forms.upload_form import UploadFileForm
 from ui.models import Assignment, Submission
 
 LOG = logging.getLogger(__file__)
@@ -80,7 +80,11 @@ def assignment_mainpage(request: HttpRequest, pk: int) -> HttpResponse:
                 api = VMCheckerAPI(settings.VMCK_BACKEND_URL)
                 archive = api.retrive_archive(gitlab_private_token, gitlab_project_id, gitlab_branch)
                 uuid = api.submit(
-                    assignment.gitlab_private_token, assignment.gitlab_project_id, assignment.gitlab_branch, request.user.username, archive
+                    assignment.gitlab_private_token,
+                    assignment.gitlab_project_id,
+                    assignment.gitlab_branch,
+                    request.user.username,
+                    archive,
                 )
                 Submission.objects.create(user=request.user, assignment=assignment, evaluator_job_id=uuid)
         elif "submitYourArchive" in request.POST:
@@ -89,7 +93,11 @@ def assignment_mainpage(request: HttpRequest, pk: int) -> HttpResponse:
                 file = request.FILES["file"]
                 api = VMCheckerAPI(settings.VMCK_BACKEND_URL)
                 uuid = api.submit(
-                    assignment.gitlab_private_token, assignment.gitlab_project_id, assignment.gitlab_branch, request.user.username, str(base64.encodebytes(file.read()), encoding="ascii")
+                    assignment.gitlab_private_token,
+                    assignment.gitlab_project_id,
+                    assignment.gitlab_branch,
+                    request.user.username,
+                    str(base64.encodebytes(file.read()), encoding="ascii"),
                 )
                 Submission.objects.create(user=request.user, assignment=assignment, evaluator_job_id=uuid)
 
