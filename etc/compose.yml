@@ -14,6 +14,11 @@ services:
       DATABASE_HOST: "database"
       DATABASE_PORT: "5432"
       SECRET_KEY: "${SECRET_KEY}"
+      LDAP_SERVER_URI: "${LDAP_SERVER_URI}"
+      LDAP_BIND_DN: "${LDAP_BIND_DN}"
+      LDAP_BIND_PASSWORD: "${LDAP_BIND_PASSWORD}"
+      LDAP_USER_TREE: "${LDAP_USER_TREE}"
+      LDAP_USER_FILTER: "${LDAP_USER_FILTER}"
     ports:
       - "7000:7000"
     networks:

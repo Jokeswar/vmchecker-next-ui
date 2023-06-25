@@ -16,6 +16,7 @@ uwsgi = "*"
 psycopg2-binary = "*"
 django-prometheus = "*"
 requests = "*"
+django-auth-ldap = "*"
 
 [dev-packages]
 pylint = "*"

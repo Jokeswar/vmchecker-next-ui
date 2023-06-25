@@ -2,6 +2,9 @@ import os
 from pathlib import Path
 from typing import Any
 
+import ldap
+from django_auth_ldap.config import LDAPSearch
+
 from ui.util import string_to_bool
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,9 +27,9 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -117,6 +120,33 @@ STATIC_ROOT = BASE_DIR / "ui " / "static"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_URL = "/login"
+
+AUTH_LDAP_SERVER_URI = os.getenv("LDAP_SERVER_URI")
+AUTH_LDAP_BIND_DN = os.getenv("LDAP_BIND_DN")
+AUTH_LDAP_BIND_PASSWORD = os.getenv("LDAP_BIND_PASSWORD")
+AUTH_LDAP_USER_SEARCH = LDAPSearch(
+    os.getenv("LDAP_USER_TREE"),
+    ldfap.SCOPE_SUBTREE,
+    os.getenv("LDAP_USER_FILTER"),
+)
+
+AUTH_LDAP_FIND_GROUP_PERMS = False
+
+AUTH_LDAP_USER_ATTR_MAP = {
+    "first_name": "givenName",
+    "last_name": "sn",
+    "email": "mail",
+}
+
+AUTH_LDAP_ALWAYS_UPDATE_USER = True
+AUTH_LDAP_CACHE_TIMEOUT = 3600
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+]
+
+if AUTH_LDAP_SERVER_URI and len(AUTH_LDAP_SERVER_URI) > 0:
+    AUTHENTICATION_BACKENDS.insert(0, "django_auth_ldap.backend.LDAPBackend")
 
 VMCK_BACKEND_URL = os.environ.get("VMCK_BACKEND_URL", "http://localhost:8000/api/v1/")
 
