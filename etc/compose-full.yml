@@ -10,7 +10,7 @@ services:
       VMCK_BACKEND_URL: "http://backend:8000/api/v1/"
       DATABASE_ENGINE: "django.db.backends.postgresql"
       DATABASE_NAME: "ui"
-      DATABASE_USER: "${DATABASE_USER_UI}"
+      DATABASE_USER: "root"
       DATABASE_PASSWORD: "${DATABASE_PASSWORD_UI}"
       DATABASE_HOST: "database-ui"
       DATABASE_PORT: "5432"
@@ -31,7 +31,7 @@ services:
     restart: always
     environment:
       POSTGRES_DB: "ui"
-      POSTGRES_USER: "${DATABASE_USER_UI}"
+      POSTGRES_USER: "root"
       POSTGRES_PASSWORD: "${DATABASE_PASSWORD_UI}"
     volumes:
       - db-data-ui:/var/lib/postgresql/data
@@ -51,7 +51,7 @@ services:
       MINIO_ACCESS_KEY: "${MINIO_ACCESS_KEY}"
       MINIO_SECRET_KEY: "${MINIO_SECRET_KEY}"
       DATABASE_NAME: "backend"
-      DATABASE_USER: "${DATABASE_USER_BACKEND}"
+      DATABASE_USER: "root"
       DATABASE_PASSWORD: "${DATABASE_PASSWORD_BACKEND}"
       DATABASE_HOST: "database-backend"
       DATABASE_PORT: "5432"
@@ -71,7 +71,7 @@ services:
     restart: always
     environment:
       POSTGRES_DB: "backend"
-      POSTGRES_USER: "${DATABASE_USER_BACKEND}"
+      POSTGRES_USER: "root"
       POSTGRES_PASSWORD: "${DATABASE_PASSWORD_BACKEND}"
     volumes:
       - db-data:/var/lib/postgresql/data
