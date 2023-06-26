@@ -126,7 +126,7 @@ AUTH_LDAP_BIND_DN = os.getenv("LDAP_BIND_DN")
 AUTH_LDAP_BIND_PASSWORD = os.getenv("LDAP_BIND_PASSWORD")
 AUTH_LDAP_USER_SEARCH = LDAPSearch(
     os.getenv("LDAP_USER_TREE"),
-    ldfap.SCOPE_SUBTREE,
+    ldap.SCOPE_SUBTREE,
     os.getenv("LDAP_USER_FILTER"),
 )
 
