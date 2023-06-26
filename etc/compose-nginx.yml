@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  webserver:
+    image: nginx:latest
+    environment:
+      VMCHECKER_BACKEND_URL: ${VMCHECKER_BACKEND_URL}
+      SERVER_NAME: ${SERVER_NAME}
+    ports:
+      - 80:80
+      - 443:443
+    restart: always
+    volumes:
+      - ./:/etc/nginx/conf.d/
+      - ./certs:/etc/nginx/ssl/:ro
+    command: /bin/bash -c "envsubst < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"

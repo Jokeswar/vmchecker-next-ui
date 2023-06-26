@@ -11,12 +11,11 @@ pip3 install pipenv
 
 ## Run a deployment stack (backend included)
 
-1. Copy `etc/.env.compose-full` to the root folder as `.env`
-2. Replace the variables inside with the correct values
-3. Deploy using docker compose and the `etc/compose-full.yml` configuration
+1. Replace the variables inside `etc/.env.compose-full` with the correct values
+2. Deploy using docker compose and the `etc/compose-full.yml` configuration
 
 ```
-pipenv run docker compose -f etc/compose-full.yml -p ui up
+docker compose -f etc/compose-full.yml --env-file etc/.env.compose-full -p ui up
 ```
 
 By default a user admin (password: admin) will be created along with a dummy assignment.
@@ -24,6 +23,16 @@ You can visit the website by going to `http://localhost:7000/`.
 
 To change the assignment go to `http://localhost:7000/admin/` and log in as the admin.
 Next by clicking the assignments tab and then choosing one of the results you can edit that assignment.
+
+## Run the UI securly using https
+
+1. Replace the variables inside `etc/.env.compose-nginx` with the correct values
+2. Place the certificate (*.key and *.pem files) inside `etc/cert/`. They must be saved as certificate.pem
+3. Deploy using docker compose the the `compose-nginx.yml` configuration
+
+```
+docker compose -f etc/compose-nginx.yml --env-file etc/.env.compose-nginx -p nginx-ui up
+```
 
 ## Run a development stack
 

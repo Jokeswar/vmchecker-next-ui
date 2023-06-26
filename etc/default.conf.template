@@ -1,0 +1,25 @@
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name ${SERVER_NAME};
+    server_tokens off;
+
+    location / {
+        return 301 https://${SERVER_NAME}$request_uri;
+    }
+}
+
+server {
+    listen 443 default_server ssl http2;
+    listen [::]:443 ssl http2;
+
+    server_name ${SERVER_NAME};
+
+    ssl_certificate /etc/nginx/ssl/certificat.pem;
+    ssl_certificate_key /etc/nginx/ssl/certificat.key;
+
+    location / {
+        proxy_pass ${VMCHECKER_BACKEND_URL};
+    }
+}
