@@ -4,6 +4,7 @@ WORKDIR /opt/ui
 
 ADD ui ./ui
 ADD bin ./bin
+ADD etc ./etc
 COPY Pipfile.lock ./
 COPY Pipfile ./
 COPY manage.py ./

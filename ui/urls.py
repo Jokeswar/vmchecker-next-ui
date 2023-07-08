@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
 from ui import views
 
@@ -12,4 +14,4 @@ urlpatterns = [
     path("submission/<int:pk>", views.submission_result, name=views.submission_result.__name__),
     path("admin/", admin.site.urls),
     path("health", views.health),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
