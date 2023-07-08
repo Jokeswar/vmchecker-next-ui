@@ -90,10 +90,27 @@ services:
     networks:
       - storage-backend-network
 
+  openldap:
+    image: bitnami/openldap:2
+    ports:
+      - '1389:1389'
+      - '1636:1636'
+    environment:
+      LDAP_ADMIN_USERNAME: "admin"
+      LDAP_ADMIN_PASSWORD: "adminpassword"
+      LDAP_USERS: "reader,user01,user02"
+      LDAP_PASSWORDS: "readerpassword,password1,password2"
+      LDAP_ROOT: "dc=school,dc=com"
+    networks:
+      - backend-network
+    volumes:
+      - 'openldap_data:/bitnami/openldap'
+
 volumes:
   db-data-ui:
   storage-data:
   db-data:
+  openldap_data:
 
 networks:
   database-ui-network:
